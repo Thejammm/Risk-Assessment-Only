@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Risk Assessment Form</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Global Rich Text Toolbar -->
+  <div class="global-rte no-print" role="toolbar" aria-label="Rich text toolbar">
+    <button type="button" class="rte-btn" data-cmd="bold" title="Bold"><b>B</b></button>
+    <button type="button" class="rte-btn" data-cmd="italic" title="Italic"><i>I</i></button>
+    <button type="button" class="rte-btn" data-cmd="underline" title="Underline"><u>U</u></button>
+    <span class="rte-sep"></span>
+  <!-- Toolbar Save button (calls existing save logic) -->
+  <button type="button" class="rte-btn" id="btnToolbarSave" title="Save">💾 Save</button>
+  <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" data-cmd="insertUnorderedList" title="Bulleted list">• List</button>
+    <button type="button" class="rte-btn" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+    <button type="button" class="rte-btn" data-cmd="indent" title="Indent">→</button>
+    <button type="button" class="rte-btn" data-cmd="outdent" title="Outdent">←</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn is-active" data-cmd="justifyLeft" title="Align left">⟸</button>
+    <button type="button" class="rte-btn" data-cmd="justifyCenter" title="Align center">⇔</button>
+    <button type="button" class="rte-btn" data-cmd="justifyRight" title="Align right">⟹</button>
+<button type="button" class="rte-btn" title="Valign top" onclick="(function(){var n=window.getSelection().anchorNode;n=n&amp;&amp;n.nodeType===3?n.parentNode:n;var c=n&amp;&amp;n.closest?n.closest('td,th'):null;if(c){c.style.verticalAlign='top';}})()">Top</button>
+<button type="button" class="rte-btn" title="Valign bottom" onclick="(function(){var n=window.getSelection().anchorNode;n=n&amp;&amp;n.nodeType===3?n.parentNode:n;var c=n&amp;&amp;n.closest?n.closest('td,th'):null;if(c){c.style.verticalAlign='bottom';}})()">Bottom</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" data-cmd="createLink" title="Insert link">🔗</button>
+    <button type="button" class="rte-btn" data-cmd="removeFormat" title="Clear formatting">⌫Fmt</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" data-cmd="undo" title="Undo">↶</button>
+    <button type="button" class="rte-btn" data-cmd="redo" title="Redo">↷</button>
+    <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" id="btnAddSection" title="Add section after selected">+ Section</button>
+    <button type="button" class="rte-btn" id="btnRemoveSection" title="Remove selected section">− Section</button>
+    <button type="button" class="rte-btn" id="btnRenameSection" title="Rename selected section">Rename</button>
+    <button type="button" class="rte-btn" id="btnAddPageBreak" title="Add page break after selected">Page Break</button>
+    <button type="button" class="rte-btn" id="btnToggleSnippets" title="Toggle snippets for NEW sections">Snippets: On</button>
+    <span class="rte-sep"></span>
+  <!-- PPE checklist controls: add or remove items -->
+  <button type="button" class="rte-btn" id="btnAddPPE" title="Add PPE checklist item">Add PPE</button>
+  <button type="button" class="rte-btn" id="btnRemovePPE" title="Remove last PPE checklist item">Remove PPE</button>
+  <span class="rte-sep"></span>
+    <button type="button" class="rte-btn" id="btnInsertTable" title="Insert table at caret">Table</button>
+    <button type="button" class="rte-btn" id="btnCellBg" title="Set cell background colour">Cell Color</button>
+    <input type="color" id="cellColorPicker" style="display:none">
+    <button type="button" class="rte-btn" id="btnTextColor" title="Set text colour">Text Color</button>
+    <input type="color" id="textColorPicker" style="display:none">
+<button type="button" class="rte-btn" title="Insert image" onclick="imgPick.click()">Image</button>
+               <button type="button" class="rte-btn" title="Insert image by URL" onclick="(function(){var u=prompt('Paste image URL');if(!u)return;var i=new Image();i.src=u;i.alt='';i.style.width='600px';i.style.maxWidth='100%';i.style.height='auto';var s=getSelection();if(s&amp;&amp;s.rangeCount){var r=s.getRangeAt(0);r.deleteContents();r.insertNode(i);r.setStartAfter(i);r.collapse(true);s.removeAllRanges();s.addRange(r);}})()">Image URL</button>
+<!-- Add a new blank row below the current row -->
+<button type="button" class="rte-btn" title="Add row" onclick="(function(){var s=getSelection();if(!s||!s.rangeCount)return;
+    var n=s.getRangeAt(0).commonAncestorContainer;if(n.nodeType===3)n=n.parentNode;
+    var tr=n.closest('tbody tr'); if(!tr) return;
+    var nr=tr.cloneNode(true);
+    nr.querySelectorAll('td').forEach(function(td){ td.textContent='Add Text'; }); /* clear cells */
+    tr.parentNode.insertBefore(nr, tr.nextSibling);
+  })()">+ Row</button>
+
+<!-- Delete the current row -->
+<button type="button" class="rte-btn" title="Delete row" onclick="(function(){var s=getSelection();if(!s||!s.rangeCount)return;
+    var n=s.getRangeAt(0).commonAncestorContainer;if(n.nodeType===3)n=n.parentNode;
+    var tr=n.closest('tbody tr'); if(tr) tr.remove();
+  })()">− Row</button>
+  <!-- add in the global toolbar -->
+<button type="button" class="rte-btn" id="btnSaveHtml" title="Download as .html">Save .html</button>
+<button type="button" class="rte-btn" id="btnMergeHtml" title="Merge from file…">Merge…</button>
+<input type="file" id="mergePick" accept=".html,.htm" style="display:none">
+</div>
+<input type="file" id="imgPick" accept="image/*" style="display:none" onchange="(f=&gt;{if(!f)return;let r=new FileReader();r.onload=e=&gt;{
+         document.execCommand('insertHTML',false,
+           '&lt;img src=&quot;'+e.target.result+
+           '&quot; alt=&quot;&quot; style=&quot;width:300px;max-width:100%;height:auto&quot;&gt;');
+       };r.readAsDataURL(f); this.value='';})(this.files[0])">
+
+<div style="position: fixed; top: 0px; z-index: 1000;" class="no-print pages-toolbar" aria-label="Form controls"><button type="button" class="btn add-form-page">Add form</button></div>
+<div id="formPages"><section class="form-page">
+<div style="position: fixed; top: 30px; z-index: 1000;" class="no-print page-toolbar"><button type="button" class="btn danger remove-form-page">Remove form</button></div>
+  <div class="sheet" role="document" contenteditable="true"> 
+
+    <!-- Header -->
+    <header class="doc-header" contenteditable="false">
+      <div>
+      <div class="title" span="" contenteditable="true">Prestons Construction Ltd</div>
+        <div class="title">Risk Assessment</div>
+      </div>
+  <div class="muted" style="text-align:right; font-size:12px;">Risk Assessment No.<span class="ra-number" contenteditable="true" role="textbox" aria-label="Risk assessment number">RA1</span></div>
+    </header>
+
+    <!-- Meta band -->
+    <section class="meta" contenteditable="false">
+      <div>
+        <div class="label">Task / activity</div>
+        <strong contenteditable="true" class="editable editable-meta">General Manual Handling&nbsp;</strong>
+      </div>
+      <div>
+        <div class="label">Location</div>
+        <strong contenteditable="true" class="editable editable-meta">To &amp; From and on the working Area</strong>
+      </div>
+      <div>
+        <div class="label">Project Name</div>
+        <strong contenteditable="true" class="editable editable-meta">Mill View, Keyingham</strong>
+      </div>
+      <div>
+        <div class="label">Project Number</div>
+        <strong contenteditable="true" class="editable editable-meta">N/A</strong>
+      </div>
+    </section>
+
+    <!-- Evaluation note -->
+    <div class="band" contenteditable="false">
+      <strong>Evaluation of risk</strong> – The Procedure is outlined below 
+    </div>
+
+    <!-- Likelihood / Severity matrix & key -->
+    <section class="matrix-wrap" contenteditable="false">
+      <div class="matrix-head">RISK</div>
+      <div class="matrix-grid">
+        <div class="matrix-col">
+          <h3>LIKELIHOOD</h3>
+          <div class="level" style="min-height: 83px;"><span class="badge low">LOW</span> It has not happened for a long time, is known to be infrequent and is not likely to happen.</div>
+          <div class="level" style="min-height: 103px;"><span class="badge med">MEDIUM</span> It may be less regular, but is still recognised as being likely to happen.</div>
+          <div class="level" style="min-height: 82px;"><span class="badge high">HIGH</span> It may happen regularly or it could be a usual or common occurrence.</div>
+        </div>
+        <div class="matrix-col">
+          <h3>SEVERITY</h3>
+          <div class="level" style="min-height: 83px;"><span class="badge low">LOW</span> There would be minor injuries to persons or some slight damage to property. Environmental impact resulting in minimal environmental damage in both the short- and long-term.</div>
+          <div class="level" style="min-height: 103px;"><span class="badge med">MEDIUM</span> It would probably cause serious injuries, or persons would be off work for over three days due to their injuries / substantial property damage. Environmental impact resulting in damage contained within site boundaries but requiring prompt remedial action, e.g. fuel spillages.</div>
+          <div class="level" style="min-height: 82px;"><span class="badge high">HIGH</span> The result could be a fatal accident or multiple injuries / major property damage. Significant environmental impact resulting in off-site damage or long term environmental issue, e.g. pollution of watercourse, contamination of land etc.</div>
+        </div>
+      </div>
+      <div class="key">
+        <div><span class="swatch low"></span><strong>LOW</strong></div>
+        <div><span class="swatch med"></span><strong>MEDIUM</strong></div>
+        <div><span class="swatch high"></span><strong>HIGH</strong></div>
+      </div>
+    </section>
+
+    <!-- Hazards table -->
+    <section>
+      
+<div class="eval-wrap" contenteditable="false">
+  <table class="table eval-table">
+    <thead>
+      <tr><th colspan="2">Evaluation of the risk</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="w-20"><strong>Aim</strong></td>
+        <td>To Reduce the risk to low if possible.</td>
+      </tr>
+      <tr>
+        <td class="w-20"><strong>List the hazards associated with an activity</strong></td>
+        <td> Review the task/activity and estimate using Low (L), Medium (M), High (H) the likehood of harm being caused to the person or persons in proximity. Then do the same for teh severity using the same (L,M,H) metrics.</td>
+      </tr>
+      <tr>
+        <td class="w-20"><strong>Results</strong></td>
+        <td>
+      <ul>
+        <li><strong>Combined risk = LOW:</strong> the activity does not require further attention beyond the standard 'good practice' controls included in the Construction Health and Safety Plan (or Environmental Management Plan), site rules and relevant procedures / guidance.</li>
+        <li><strong>Combined risk = MEDIUM:</strong> the activity could be significant and management control is important. Manage through Method Statements and or other management plans or procedures specific to the project. Additional training or resources may be required.</li>
+        <li><strong>Combined risk = HIGH:</strong> deemed to be significant and senior management control is of a high priority. Consider design changes. Best Practice measures should be adopted. Manage through Method Statements and or other management plans or procedures / instructions specific to the activity plus specialist knowledge and planning. Note that higher risks may require more effort (and costs) to control.</li>
+      </ul></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <div class="no-print ra-toolbar" role="toolbar" aria-label="Hazards table controls">
+        <button type="button" class="btn ra-add-row">Add row</button>
+        <button type="button" class="btn ra-dup-last">Duplicate last row</button>
+      </div>
+      <table class="table hazardsTable" data-role="hazards">
+
+        <thead>
+          <tr>
+            <th class="w-20">What are the hazards?</th>
+            <th>Who might be harmed?<br><span class="muted">Employees / Contractors / Public / Others / Environment</span></th>
+            <th>How</th>
+            <th class="center w-10">Initial risk<br><span class="muted" style="font-weight:400">(without controls)</span></th>
+            <th class="w-20">What controls are required?</th>
+            <th class="center w-10">Residual risk</th>
+            <th class="w-12">Action by</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+        <tr><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Musculoskeletal injury from handling heavy/awkward loads</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Employees, 3rd parties</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Single-person lifts beyond capability; poor technique</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge high">HIGH</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Use mechanical aids where possible; if lifting manually, keep back straight, knees bent, look ahead, lift with legs; seek assistance if too heavy/awkward.</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge low">LOW</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Supervisor</div></td></tr><tr><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Slips, trips and falls during handling</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Employees, 3rd parties</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Obstructed routes; poor housekeeping; poor lighting</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge high">HIGH</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Plan route; remove obstacles; ensure safe access/egress and adequate lighting; maintain housekeeping.</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge low">LOW</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Supervisor</div></td></tr><tr><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Hand lacerations from sharp materials</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Employees, 3rd parties</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Handling sharp/abrasive objects</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge med">MEDIUM</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Wear suitable gloves for handling tasks, Ensure edges and blunt prior to lifting&nbsp;</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge low">LOW</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Supervisor</div></td></tr><tr><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">MSD injuries from lifting/carrying/pushing/pulling.</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Employees, 3rd parties</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Handling heavy/awkward items; poor posture or twisting.</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge med">MEDIUM</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Avoid where possible; use mechanical aids; team lifts; plan route; reduce load size; training; rotate tasks.</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge low">LOW</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Supervisor – Operatives</div></td></tr><tr><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">MSD strains; crush/pinch injuries.</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Employees, 3rd parties</div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Carrying awkward/heavy units; twisting in tight spaces.</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge med">MEDIUM</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Team lifts; route planning; handles/suction aids; mechanical aids where possible; break down to manageable components; rotate tasks.</div></td><td contenteditable="false" class="editable"><div class="risk-cell"><select class="risk-select"><option value="">-- Select --</option><option value="low">LOW</option><option value="medium">MEDIUM</option><option value="high">HIGH</option></select><span class="badge low">LOW</span></div></td><td contenteditable="true" class="editable"><div class="editable" contenteditable="true">Supervisor – Operatives</div></td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- Evaluation of risk guidance -->
+    <section class="prose">
+      
+    </section>
+
+    <!-- PPE -->
+    
+<section class="ppe-wrap" contenteditable="false">
+  <table class="table ppe-table" contenteditable="false">
+    <thead>
+      <tr>
+        <th colspan="2"><span class="editable" contenteditable="false">Personal Protective Equipment (PPE)</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="w-20"><strong>Instruction</strong></td>
+        <td><div class="editable" contenteditable="false">Identify all necessary PPE.</div></td>
+      </tr>
+      <tr>
+        <td class="w-20"><strong>Checklist</strong></td>
+        <td>
+          <div class="ppe-checks">
+            <div class="check"><label><input type="checkbox" id="ppe_safety_helmet"> <span class="editable" contenteditable="true">Safety Helmet</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_hivis"> <span class="editable" contenteditable="true">Hi-Vis Clothing</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_footwear"> <span class="editable" contenteditable="true">Safety Footwear</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_gloves"> <span class="editable" contenteditable="true">Gloves</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_eyes"> <span class="editable" contenteditable="true">Eye Protection</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_hearing"> <span class="editable" contenteditable="true">Hearing Protection</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_res_light"> <span class="editable" contenteditable="true">Respiratory Protection (Light duty)</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_res_heavy"> <span class="editable" contenteditable="true">Respiratory Protection (Heavy duty)</span></label></div>
+            <div class="check"><label><input type="checkbox" id="ppe_harness"> <span class="editable" contenteditable="true">Harness</span></label></div>
+
+
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="w-20"><strong>Notes</strong></td>
+        <td><div class="editable" contenteditable="true">The Above listed Personal Protective Equipment (PPE) will NOT replace the mandatory PPE it is a task specific instruction. It is listed where mandatory PPE may not be suitable and <span style="background-color: rgb(255, 255, 255);">sufficient</span>&nbsp;for the task being undertaken.</div></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+
+    <!-- Method Statement & Equipment -->
+    <section class="prose" contenteditable="false">
+      
+<section class="equip-wrap">
+  <table class="table equip-table">
+    <thead>
+      <tr>
+        <th colspan="2">Equipment Details / Schedule</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="w-20"><strong>Instruction</strong></td>
+        <td><div class="editable" contenteditable="true"><b>General Manual Handling</b></div></td>
+      </tr>
+      <tr>
+        <td class="w-20"><strong>Items</strong></td>
+        <td>
+          <ol class="editable" contenteditable="true">
+            <li>N/A</li>
+          </ol>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+      
+<h2>COSHH Information</h2>
+
+<div class="no-print coshh-toolbar" role="toolbar" aria-label="COSHH table controls">
+  <button type="button" class="btn coshh-add-row">Add row</button>
+  <button type="button" class="btn danger coshh-remove-row">Remove last row</button>
+</div>
+<table class="table coshh-table">
+
+  <thead>
+    <tr><th colspan="2">COSHH Information</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="w-20"><strong>Description</strong></td>
+      <td><div class="editable" contenteditable="true">N/A</div></td>
+    </tr>
+    <tr>
+      <td class="w-20"><strong>Notes / Reference</strong></td>
+      <td><div class="editable" contenteditable="true">N/A</div></td>
+    </tr>
+  </tbody>
+</table>
+    </section>
+<!-- Sign-off Register -->
+<section class="signreg-wrap" contenteditable="false">
+  <h2>Sign-off Register</h2>
+  <div class="no-print signreg-toolbar" aria-label="Sign-off register controls">
+    <button type="button" class="btn signreg-add-row">Add row</button>
+    <button type="button" class="btn danger signreg-remove-row">Remove last row</button>
+  </div>
+  <table class="table signreg-table" id="signregTable">
+    <thead>
+      <tr>
+        <th style="width:3rem;">#</th>
+        <th style="width:22%;">Name</th>
+        <th style="width:20%;">Position / Role</th>
+        <th style="width:20%;">Company</th>
+        <th style="width:18%;">Signature</th>
+        <th style="width:12%;">Date</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="center rowno">1</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr>
+    <tr><td class="center rowno">2</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">3</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">4</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">5</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">6</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">7</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">8</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">9</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">10</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">11</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr><tr><td class="center rowno">12</td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="editable" contenteditable="true"><br></div></td><td><div class="sig-box editable" contenteditable="true" role="textbox" aria-label="Signature"></div></td><td><div class="editable" contenteditable="true"><br></div></td></tr></tbody>
+  </table>
+</section>
+
+    <!-- Revision table -->
+    <section>
+      <table class="review">
+        <thead>
+          <tr>
+            <th style="width:8%">Revision Number</th>
+            <th style="width:48%">Revision comments</th>
+            <th style="width:30%">Revision date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="height:20px">Rev1</td><td>Initial Creation&nbsp;</td><td>19/10/2026 or before</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px"><span contenteditable="true"><strong>This document has been produced by</strong></span></div>
+    </section>
+    <!-- Sign-off -->
+    <section>
+      <div class="sig-grid" contenteditable="false">
+        <div class="sig"><div class="label">Assessor</div><div class="editable sig-value" contenteditable="true">Simon Archer</div></div>
+        <div class="sig"><div class="label">Position</div><div class="editable sig-value" contenteditable="true">Health &amp; Safety Advisor</div></div>
+        <div class="sig"><div class="label">Signed</div><div class="editable sig-value" contenteditable="true">S.Archer</div></div>
+        <div class="sig"><div class="label">Date</div><div class="editable sig-value" contenteditable="true">19/10/2025</div></div>
+      </div>
+    </section>
+  </div>
+</section></div>
+
+<script>
+/* UK construction hazard snippet library (vanilla JS) */
+window.hazardSnippets = [
+    {
+    id: 'work-at-height',
+    title: 'Work at height (Installing Bracketry)',
+    hazard: 'Falling Objects, head collision with fixed objects, e.g. steelwork, pipework, building structure etc.',
+    who: 'MVL Employees; Other Trade contractors',
+    how: 'Unfinished/Unfixed ductwork or bracketry whilst being installed potentially falling from height, whilst working at height clashing with objects',
+    controls: 'Ensure operatives are provided with and wear always on site suitable hard hat protection and are aware of statutory requirements for use. Also use of mechanical lifting equipment and a wide working platform. Tools to be tethered whilst being used when working at height.',
+    action: 'Supervisor – Operatives',
+    init: 'medium',
+    resid: 'low'
+  },
+   {
+    id: 'RA01_Falls_From_Height',
+    title: 'RA01 Falls from height (ladders)',
+    hazard: 'Fall from height using ladders',
+    who: 'Employees, 3rd parties',
+    how: 'Working from/ascending ladders; overreaching; defective/incorrect ladder',
+    controls: 'Use Grade 1 ladders in good condition; ladders are for access only; maintain 3 points of contact; set up to avoid overreach; foot when erecting and tie off; keep rungs clean; inspect/clean regularly.',
+    action: 'Supervisor',
+    init: 'high',
+    resid: 'low'
+  },
+   {
+    id: 'cuts-metal',
+    title: 'Cuts from bare edges of metal',
+    hazard: 'Cuts from bare edges of metal.',
+    who: 'MVL Employees',
+    how: 'Carrying or install of sheet metal/spiral wound ductwork',
+    controls: 'Cut 5 resistance gloves are mandatory and to be worn always; these will also protect from cuts when handling ductwork. Long sleeves/gauntlets to be worn whilst carrying or installing ductwork with \'bare edges\'.',
+    action: 'Supervisor / Luke Watson',
+    init: 'low',
+    resid: 'low'
+  },
+   {
+    id: 'hearing-noise',
+    title: 'Noise affecting hearing',
+    hazard: 'Noises affecting hearing',
+    who: 'MVL Employees',
+    how: 'Use of power tools and whilst installing ductwork',
+    controls: 'Operatives are provided with ear defenders for use whilst using power tools producing noises over 80db and are mandatory when the ELV is above 87db whilst installing.',
+    action: 'Supervisor / Luke Watson',
+    init: 'medium',
+    resid: 'low'
+  }];
+</script>
+<script src="snippets.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
